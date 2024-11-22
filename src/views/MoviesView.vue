@@ -69,20 +69,18 @@ function openMovie(movieId) {
   <div v-for="movie in movies" :key="movie.id" class="movie-card">
     
     <img
-  :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
-  :alt="movie.title"
-  @click="openMovie(movie.id)"
-/>
+      :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
+      :alt="movie.title"
+    />
     <div class="movie-details">
       <p class="movie-title">{{ movie.title }}</p>
       <p class="movie-release-date">{{ movie.release_date }}</p>
       <p class="movie-genres">{{ movie.genre_ids }}</p>
     </div>
-
-
+    
   </div>
 </div>
-<p class="movie-genres">
+    <p class="movie-genres">
  
  <span
 v-for="genre_id in movie.genre_ids"
@@ -93,7 +91,9 @@ v-for="genre_id in movie.genre_ids"
 {{ genreStore.getGenreName(genre_id) }} 
 </span>
 
-</p>;
+</p>
+
+
 <p class="movie-release-date">{{ formatDate(movie.release_date) }}</p>
 </template>
 
