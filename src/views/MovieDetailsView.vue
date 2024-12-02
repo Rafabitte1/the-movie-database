@@ -61,7 +61,6 @@
 </template>
 
 <style scoped>
-/* Layout principal */
 .main {
   display: flex;
   flex-direction: column;
@@ -71,7 +70,6 @@
   gap: 2rem;
 }
 
-/* Conteúdo principal */
 .content {
   display: flex;
   flex-direction: row;
@@ -103,7 +101,6 @@
   color: #333;
 }
 
-/* Seção de produtoras */
 .companies {
   display: flex;
   flex-wrap: wrap;
@@ -124,7 +121,6 @@
   font-weight: bold;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .content {
     flex-direction: column;
