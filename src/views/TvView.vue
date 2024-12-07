@@ -1,86 +1,62 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import api from '@/plugins/axios';
+  import { defineProps, onMounted } from 'vue';
+  import { useMovieStore } from '@/stores/movie';
+  const movieStore = useMovieStore();
 
-const genres = ref([]);
-const isLoading = ref(false); // Indicador de carregamento
-const errorMessage = ref(''); // Mensagem de erro
+  const props = defineProps({
+    movieId: {
+      type: Number,
+      required: true,
+    },
+  });
 
-onMounted(async () => {
-  isLoading.value = true;
-  try {
-    const response = await api.get('genre/tv/list?language=pt-BR');
-    genres.value = response.data.genres;
-  } catch (error) {
-    console.error('Erro ao buscar os gêneros:', error);
-    errorMessage.value = 'Não foi possível carregar os gêneros. Tente novamente mais tarde.';
-  } finally {
-    isLoading.value = false;
-  }
-});
+  onMounted(async () => {
+    await movieStore.getMovieDetail(props.movieId);
+  });
 </script>
+
 <template>
-  <h1>Programas de TV</h1>
-  <div v-if="isLoading">Carregando gêneros...</div>
-  <div v-else-if="errorMessage">
-    <p>{{ errorMessage }}</p>
+  
+  <div class="main">
+    <div class="content">
+      <img
+        :src="`https://image.tmdb.org/t/p/w185${movieStore.currentMovie.poster_path}`"
+        :alt="movieStore.currentMovie.title"
+      />
+
+      <div class="details">
+        <h1>Filme: {{ movieStore.currentMovie.title }}</h1>
+        <p>{{ movieStore.currentMovie.tagline }}</p>
+        <p>{{ movieStore.currentMovie.overview }}</p>
+        <p>Orçamento: ${{ movieStore.currentMovie.budget }}</p>
+        <p>Avaliação: {{ movieStore.currentMovie.vote_average }}</p>
+      </div>
+    </div>
   </div>
-  <ul v-else class="genre-list">
-    <li v-for="genre in genres" :key="genre.id" class="genre-item">
-      {{ genre.name }}
-    </li>
-  </ul>
+
+  <p>Produtoras</p>
+  <div class="companies">
+    <template
+      v-for="company in movieStore.currentMovie.production_companies"
+      :key="company.id"
+    >
+      <img
+        v-if="company.logo_path"
+        :src="`https://image.tmdb.org/t/p/w92${company.logo_path}`"
+        :alt="company.name"
+      />
+      <p v-else>{{ company.name }}</p>
+    </template>
+  </div>
+  
 </template>
 
 <style scoped>
-/* Lista de gêneros */
-.genre-list {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  list-style: none;
-  padding: 1rem;
-  margin: 0;
-}
-
-.genre-item {
-  background-color: #5d6424;
-  border-radius: 1rem;
-  padding: 0.5rem 1.2rem;
-  color: #fff;
-  font-weight: bold;
-  font-size: 1rem;
-  text-transform: capitalize;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.genre-item:hover {
-  cursor: pointer;
-  background-color: #7d8a2e;
-  transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Mensagem de erro */
-p {
-  text-align: center;
-  font-size: 1.1rem;
-  color: red;
-  margin-top: 1rem;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .genre-list {
-    gap: 1rem;
+  .companies {
+    display: flex;
+    flex-direction: row;
+    column-gap: 3rem;
+    align-items: center;
+    margin-bottom: 2rem;
   }
-
-  .genre-item {
-    font-size: 0.9rem;
-    padding: 0.4rem 1rem;
-  }
-}
 </style>
-

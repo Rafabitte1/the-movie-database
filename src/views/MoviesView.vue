@@ -31,15 +31,22 @@ onMounted(async () => {
 const listMovies = async (genreId) => {
   genreStore.setCurrentGenreId(genreId);
   isLoading.value = true;
-  const response = await api.get('discover/movie', {
-    params: {
-      with_genres: genreId,
-      language: 'pt-BR',
-    },
-  });
-  movies.value = response.data.results;
-  isLoading.value = false;
+  try {
+    const response = await api.get('discover/movie', {
+      params: {
+        with_genres: genreId,
+        language: 'pt-BR',
+      },
+    });
+    movies.value = response.data.results;
+  } catch (error) {
+    console.error('Erro ao carregar filmes:', error);
+    movies.value = [];
+  } finally {
+    isLoading.value = false;
+  }
 };
+
 </script>
 
 <template>

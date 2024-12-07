@@ -1,7 +1,6 @@
 <script setup></script>
-
 <template>
-    <header>
+  <header>
     <nav>
       <router-link to="/">Home</router-link>
       <router-link to="/filmes">Filmes</router-link>
