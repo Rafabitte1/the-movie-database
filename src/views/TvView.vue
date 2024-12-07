@@ -1,62 +1,63 @@
-<script setup>
-  import { defineProps, onMounted } from 'vue';
-  import { useMovieStore } from '@/stores/movie';
-  const movieStore = useMovieStore();
-
-  const props = defineProps({
-    movieId: {
-      type: Number,
-      required: true,
-    },
-  });
-
-  onMounted(async () => {
-    await movieStore.getMovieDetail(props.movieId);
-  });
-</script>
-
 <template>
-  
-  <div class="main">
-    <div class="content">
-      <img
-        :src="`https://image.tmdb.org/t/p/w185${movieStore.currentMovie.poster_path}`"
-        :alt="movieStore.currentMovie.title"
-      />
-
-      <div class="details">
-        <h1>Filme: {{ movieStore.currentMovie.title }}</h1>
-        <p>{{ movieStore.currentMovie.tagline }}</p>
-        <p>{{ movieStore.currentMovie.overview }}</p>
-        <p>Orçamento: ${{ movieStore.currentMovie.budget }}</p>
-        <p>Avaliação: {{ movieStore.currentMovie.vote_average }}</p>
-      </div>
-    </div>
-  </div>
-
-  <p>Produtoras</p>
-  <div class="companies">
-    <template
-      v-for="company in movieStore.currentMovie.production_companies"
-      :key="company.id"
-    >
-      <img
-        v-if="company.logo_path"
-        :src="`https://image.tmdb.org/t/p/w92${company.logo_path}`"
-        :alt="company.name"
-      />
-      <p v-else>{{ company.name }}</p>
-    </template>
-  </div>
-  
+  <h1>Programas de TV</h1>
+  <ul class="genre-list">
+    <li v-for="genre in genres" :key="genre.id" class="genre-item">
+      {{ genre.name }}
+    </li>
+  </ul>
 </template>
 
+<script setup>
+import { useGenreStore } from '@/stores/genre';
+import { computed, onMounted } from 'vue';
+
+const router = useRouter();
+const genreStore = useGenreStore();
+const isLoading = ref(false);
+const movies = ref([]);
+const genres = ref([]);
+
+const formatDate = (date) => new Date(date).toLocaleDateString('pt-BR');
+
+function openMovie(movieId) {
+  router.push({ name: 'MovieDetails', params: { movieId } });
+}
+
+function getGenreName(id) {
+  const genero = genres.value.find((genre) => genre.id === id);
+  return genero ? genero.name : 'Gênero Desconhecido';
+}
+
+onMounted(async () => {
+  const response = await api.get('genre/movie/list?language=pt-BR');
+  genres.value = response.data.genres;
+  genreStore.setGenres(genres.value);
+});
+</script>
+
 <style scoped>
-  .companies {
+  .genre-list {
     display: flex;
-    flex-direction: row;
-    column-gap: 3rem;
-    align-items: center;
-    margin-bottom: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .genre-item {
+    background-color: #5d6424;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+    align-self: center;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+  }
+
+  .genre-item:hover {
+    cursor: pointer;
+    background-color: #7d8a2e;
+    box-shadow: 0 0 0.5rem #5d6424;
   }
 </style>
