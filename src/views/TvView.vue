@@ -10,29 +10,15 @@
 <script setup>
 import { useGenreStore } from '@/stores/genre';
 import { computed, onMounted } from 'vue';
-
-const router = useRouter();
+import api from './plugins/axios';
 const genreStore = useGenreStore();
-const isLoading = ref(false);
-const movies = ref([]);
-const genres = ref([]);
 
-const formatDate = (date) => new Date(date).toLocaleDateString('pt-BR');
-
-function openMovie(movieId) {
-  router.push({ name: 'MovieDetails', params: { movieId } });
-}
-
-function getGenreName(id) {
-  const genero = genres.value.find((genre) => genre.id === id);
-  return genero ? genero.name : 'Gênero Desconhecido';
-}
-
-onMounted(async () => {
-  const response = await api.get('genre/movie/list?language=pt-BR');
-  genres.value = response.data.genres;
-  genreStore.setGenres(genres.value);
+// Fetch genres for TV programs
+onMounted(() => {
+  genreStore.getAllGenres('tv');
 });
+
+const genres = computed(() => genreStore.genres);
 </script>
 
 <style scoped>

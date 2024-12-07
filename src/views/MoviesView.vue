@@ -67,7 +67,7 @@ const listMovies = async (genreId) => {
   </div>
   <div class="movie-list">
     <div v-for="movie in movies" :key="movie.id" class="movie-card">
-      <img
+    <img
   :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
   :alt="movie.title"
   @click="openMovie(movie.id)"
