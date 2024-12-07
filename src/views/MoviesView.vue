@@ -40,7 +40,6 @@ const listMovies = async (genreId) => {
     });
     movies.value = response.data.results;
   } catch (error) {
-    console.error('Erro ao carregar filmes:', error);
     movies.value = [];
   } finally {
     isLoading.value = false;
