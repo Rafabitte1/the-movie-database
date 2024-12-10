@@ -64,152 +64,109 @@ const abrirFilme = (filmeId) => {
     </div>
 </template>
 
-
 <style scoped>
-/* Variáveis para consistência de cores */
-:root {
-  --primary-color: #67b086;
-  --secondary-color: #abc322;
-  --hover-color: #455a08;
-  --text-color: #fff;
-  --background-color: #748708;
-  --box-shadow: 0 0 0.5rem #000;
-  --font-weight-bold: bold;
-  --border-radius: 0.5rem;
-  --gap: 1rem;
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #141414;
+    color: #fff;
 }
 
-/* Gêneros ativos */
-.active {
-  background-color: var(--primary-color);
-  font-weight: var(--font-weight-bold);
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin: 20px 0;
+    color: #e50914;
 }
 
-.movie-genres span.active {
-  background-color: var(--secondary-color);
-  color: #000;
-  font-weight: var(--font-weight-bold);
+/* Estilo do seletor de categoria */
+.seletor-categoria {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    width: 80%;
+    max-width: 400px;
+}
+
+.seletor-categoria option {
+    background-color: #222;
+    color: #fff;
 }
 
 /* Lista de filmes */
-.movie-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  justify-content: center;
+.lista-filmes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
 }
 
-/* Cartão de filme */
-.movie-card {
-  width: 15rem;
-  height: 30rem;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--box-shadow);
-  background-color: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.cartao-filme {
+    background-color: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
 }
 
-.movie-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 1rem var(--primary-color);
+.cartao-filme:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-.movie-card img {
-  width: 100%;
-  height: 20rem;
-  border-radius: var(--border-radius);
-}
-
-/* Detalhes do filme */
-.movie-details {
-  padding: 0.5rem;
-}
-
-.movie-title {
-  font-size: 1.1rem;
-  font-weight: var(--font-weight-bold);
-  line-height: 1.3rem;
-  height: 3.2rem;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.movie-release-date {
-  font-size: 0.9rem;
-  text-align: center;
-  color: #555;
-}
-
-.movie-genres {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  justify-content: center;
-}
-
-.movie-genres span {
-  background-color: var(--background-color);
-  border-radius: var(--border-radius);
-  padding: 0.2rem 0.5rem;
-  color: var(--text-color);
-  font-size: 0.8rem;
-  font-weight: var(--font-weight-bold);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.movie-genres span:hover {
-  cursor: pointer;
-  background-color: var(--hover-color);
-  box-shadow: 0 0 0.5rem var(--primary-color);
-}
-
-/* Lista de gêneros */
-.genre-list {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  list-style: none;
-  margin-bottom: 2rem;
-  padding: 0;
-}
-
-.genre-item {
-  padding: 0.5rem 1rem;
-  border-radius: var(--border-radius);
-  background-color: var(--background-color);
-  color: var(--text-color);
-  font-size: 1rem;
-  font-weight: var(--font-weight-bold);
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.genre-item:hover {
-  background-color: var(--hover-color);
-  transform: scale(1.05);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .movie-card {
-    width: 90%;
+.cartao-filme img {
+    width: 100%;
     height: auto;
-  }
+    display: block;
+}
 
-  .movie-card img {
-    height: auto;
-  }
+.detalhes-filme {
+    padding: 10px;
+    text-align: center;
+}
 
-  .movie-title {
-    font-size: 1rem;
-  }
+.titulo-filme {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #fff;
+}
 
-  .movie-genres span {
-    font-size: 0.7rem;
-  }
+.data-lancamento {
+    font-size: 0.9rem;
+    color: #bbb;
+    margin-bottom: 10px;
+}
+
+.generos-filme {
+    font-size: 0.9rem;
+    color: #e50914;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+.generos-filme span {
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #e50914;
+    border-radius: 15px;
+    transition: background-color 0.3s;
+}
+
+.generos-filme span:hover {
+    background-color: #e50914;
+    color: #fff;
+}
+
+.generos-filme .ativo {
+    background-color: #e50914;
+    color: #fff;
 }
 </style>
