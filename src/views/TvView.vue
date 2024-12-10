@@ -1,49 +1,69 @@
-<template>
-  <h1>Programas de TV</h1>
-  <ul class="genre-list">
-    <li v-for="genre in genres" :key="genre.id" class="genre-item" @click="fetchTvShows(genre.id)">
-      {{ genre.name }}
-    </li>
-  </ul>
-
-  <div v-if="tvShows.length" class="tv-show-list">
-    <div v-for="show in tvShows" :key="show.id" class="tv-show-card">
-      <h2>{{ show.name }}</h2>
-      <p><strong>Original Name:</strong> {{ show.original_name }}</p>
-      <p><strong>First Air Date:</strong> {{ show.first_air_date }}</p>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '@/plugins/axios';
+import Loading from 'vue-loading-overlay';
+import { useGenreStore } from '@/stores/genre.js';
+import { useRouter } from 'vue-router';
 
-const genres = ref([]);
-const tvShows = ref([]);
+const series = ref([]);
+const carregando = ref(false);
+const categoriaSelecionada = ref(null);
+const armazemGeneros = useGenreStore();
+const router = useRouter();
 
 onMounted(async () => {
-  try {
-    genres.value = response.data.genres;
-  } catch (error) {
-
-  }
+    carregando.value = true;
+    await armazemGeneros.obterTodosGeneros('tv');
+    carregando.value = false;
 });
 
-async function fetchTvShows(genreId) {
-  try {
-    const response = await api.get('discover/tv', {
-      params: {
-        with_genres: genreId,
-        language: 'pt-BR',
-      },
+const listarSeries = async (generoId) => {
+    if (!generoId) return;
+    armazemGeneros.definirGeneroAtualId(generoId);
+    carregando.value = true;
+    const resposta = await api.get('discover/tv', {
+        params: {
+            with_genres: generoId,
+            language: 'pt-BR',
+        },
     });
-    tvShows.value = response.data.results;
-  } catch (error) {
-    tvShows.value = [];
-  }
+    series.value = resposta.data.results;
+    carregando.value = false;
+};
+
+const formatarData = (data) => new Date(data).toLocaleDateString('pt-BR');
+
+const abrirSerie = (serieId) => {
+    router.push({ name: 'DetalhesSerie', params: { serieId } });
 }
 </script>
+
+<template>
+    <h1>Séries</h1>
+    <select v-model="categoriaSelecionada" @change="listarSeries(categoriaSelecionada)" class="seletor-categoria">
+        <option value="" disabled selected>Selecione uma categoria</option>
+        <option v-for="genero in armazemGeneros.generos" :key="genero.id" :value="genero.id">
+            {{ genero.nome }}
+        </option>
+    </select>
+    <loading v-model:active="carregando" is-full-page />
+    <div class="lista-series">
+        <div v-for="serie in series" :key="serie.id" class="cartao-serie">
+            <img :src="`https://image.tmdb.org/t/p/w500${serie.poster_path}`" :alt="serie.titulo_original" @click="abrirSerie(serie.id)" />
+            <div class="detalhes-serie">
+                <p class="titulo-serie">{{ serie.titulo_original }}</p>
+                <p class="data-lancamento">{{ formatarData(serie.data_lancamento) }}</p>
+                <p class="generos-serie">
+                    <span v-for="genero_id in serie.genero_ids" :key="genero_id" @click="listarSeries(genero_id)"
+                        :class="{ ativo: genero_id === armazemGeneros.generoAtualId }">
+                        {{ armazemGeneros.obterNomeGenero(genero_id) }}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</template>
+
 
 <style scoped>
   .genre-list {
@@ -69,25 +89,5 @@ async function fetchTvShows(genreId) {
     cursor: pointer;
     background-color: #7d8a2e;
     box-shadow: 0 0 0.5rem #5d6424;
-  }
-
-  .tv-show-list {
-    margin-top: 2rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-  }
-
-  .tv-show-card {
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  .tv-show-card h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
   }
 </style>

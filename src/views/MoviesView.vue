@@ -2,93 +2,67 @@
 import { ref, onMounted } from 'vue';
 import api from '@/plugins/axios';
 import Loading from 'vue-loading-overlay';
-import { useGenreStore } from '@/stores/genre';
+import { useGenreStore } from '@/stores/genre.js';
 import { useRouter } from 'vue-router';
 
+const filmes = ref([]);
+const carregando = ref(false);
+const categoriaSelecionada = ref(null);
+const armazemGeneros = useGenreStore();
 const router = useRouter();
-const genreStore = useGenreStore();
-const isLoading = ref(false);
-const movies = ref([]);
-const genres = ref([]);
-
-const formatDate = (date) => new Date(date).toLocaleDateString('pt-BR');
-
-function openMovie(movieId) {
-  router.push({ name: 'MovieDetails', params: { movieId } });
-}
-
-function getGenreName(id) {
-  const genero = genres.value.find((genre) => genre.id === id);
-  return genero ? genero.name : 'Gênero Desconhecido';
-}
 
 onMounted(async () => {
-  const response = await api.get('genre/movie/list?language=pt-BR');
-  genres.value = response.data.genres;
-  genreStore.setGenres(genres.value);
+    carregando.value = true;
+    await armazemGeneros.obterTodosGeneros('movie');
+    carregando.value = false;
 });
 
-const listMovies = async (genreId) => {
-  genreStore.setCurrentGenreId(genreId);
-  isLoading.value = true;
-  try {
-    const response = await api.get('discover/movie', {
-      params: {
-        with_genres: genreId,
-        language: 'pt-BR',
-      },
+const listarFilmes = async (generoId) => {
+    if (!generoId) return;
+    armazemGeneros.definirGeneroAtualId(generoId);
+    carregando.value = true;
+    const resposta = await api.get('discover/movie', {
+        params: {
+            with_genres: generoId,
+            language: 'pt-BR',
+        },
     });
-    movies.value = response.data.results;
-  } catch (error) {
-    movies.value = [];
-  } finally {
-    isLoading.value = false;
-  }
+    filmes.value = resposta.data.results;
+    carregando.value = false;
 };
 
+const formatarData = (data) => new Date(data).toLocaleDateString('pt-BR');
+
+const abrirFilme = (filmeId) => {
+    router.push({ name: 'DetalhesFilme', params: { filmeId } });
+}
 </script>
 
 <template>
-  <div>
-    <h1>Gêneros de filmes</h1>
-    <ul class="genre-list">
-      <li
-        v-for="genre in genres"
-        :key="genre.id"
-        @click="listMovies(genre.id)"
-        class="genre-item"
-        :class="{ active: genre.id === genreStore.currentGenreId }"
-      >
-        {{ genre.name }}
-      </li>
-    </ul>
-    <loading v-model:active="isLoading" is-full-page />
-  </div>
-  <div class="movie-list">
-    <div v-for="movie in movies" :key="movie.id" class="movie-card">
-    <img
-  :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
-  :alt="movie.title"
-  @click="openMovie(movie.id)"
-/>
-      <div class="movie-details">
-        <p class="movie-title">{{ movie.title }}</p>
-        <p class="movie-release-date">{{ formatDate(movie.release_date) }}</p>
-        <p class="movie-genres">
-          <span
-            v-for="genre_id in movie.genre_ids"
-            :key="genre_id"
-            @click="listMovies(genre_id)"
-            :class="{ active: genre_id === genreStore.currentGenreId }"
-          >
-            {{ getGenreName(genre_id) }}
-          </span>
-        </p>
-      </div>
+    <h1>Filmes</h1>
+    <select v-model="categoriaSelecionada" @change="listarFilmes(categoriaSelecionada)" class="seletor-categoria">
+        <option value="" disabled selected>Selecione uma categoria</option>
+        <option v-for="genero in armazemGeneros.generos" :key="genero.id" :value="genero.id">
+            {{ genero.nome }}
+        </option>
+    </select>
+    <loading v-model:active="carregando" is-full-page />
+    <div class="lista-filmes">
+        <div v-for="filme in filmes" :key="filme.id" class="cartao-filme">
+            <img :src="`https://image.tmdb.org/t/p/w500${filme.poster_path}`" :alt="filme.titulo_original" @click="abrirFilme(filme.id)" />
+            <div class="detalhes-filme">
+                <p class="titulo-filme">{{ filme.titulo_original }}</p>
+                <p class="data-lancamento">{{ formatarData(filme.data_lancamento) }}</p>
+                <p class="generos-filme">
+                    <span v-for="genero_id in filme.genero_ids" :key="genero_id" @click="listarFilmes(genero_id)"
+                        :class="{ ativo: genero_id === armazemGeneros.generoAtualId }">
+                        {{ armazemGeneros.obterNomeGenero(genero_id) }}
+                    </span>
+                </p>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
-
 
 
 <style scoped>
