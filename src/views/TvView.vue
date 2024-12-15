@@ -66,110 +66,43 @@ const abrirSerie = (serieId) => {
 
 
 <style scoped>
-  /* Netflix-style CSS para o componente */
-body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #141414;
-    color: #fff;
-}
-
-h1 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin: 20px 0;
-    color: #e50914;
-}
-
-/* Estilo do seletor de categoria */
-.seletor-categoria {
-    display: block;
-    margin: 0 auto 20px;
-    padding: 10px;
+  .seletor-categoria {
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
     font-size: 1rem;
-    border-radius: 4px;
-    border: none;
-    background-color: #333;
-    color: #fff;
-    width: 80%;
-    max-width: 400px;
 }
 
-.seletor-categoria option {
-    background-color: #222;
-    color: #fff;
+.lista-series {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-/* Lista de filmes */
-.lista-filmes, .lista-series {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-.cartao-filme, .cartao-serie {
-    background-color: #222;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
+.cartao-serie {
+    width: 200px;
     cursor: pointer;
 }
 
-.cartao-filme:hover, .cartao-serie:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.cartao-filme img, .cartao-serie img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.detalhes-filme, .detalhes-serie {
-    padding: 10px;
-    text-align: center;
-}
-
-.titulo-filme, .titulo-serie {
-    font-size: 1.2rem;
+.titulo-serie {
     font-weight: bold;
-    margin: 10px 0;
-    color: #fff;
 }
 
 .data-lancamento {
-    font-size: 0.9rem;
-    color: #bbb;
-    margin-bottom: 10px;
+    color: gray;
 }
 
-.generos-filme, .generos-serie {
-    font-size: 0.9rem;
-    color: #e50914;
+.generos-serie {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    justify-content: center;
 }
 
-.generos-filme span, .generos-serie span {
-    cursor: pointer;
-    padding: 5px 10px;
-    border: 1px solid #e50914;
-    border-radius: 15px;
-    transition: background-color 0.3s;
+.generos-serie .ativo {
+    font-weight: bold;
+    color: #f39c12; 
 }
 
-.generos-filme span:hover, .generos-serie span:hover {
-    background-color: #e50914;
-    color: #fff;
-}
-
-.generos-filme .ativo, .generos-serie .ativo {
-    background-color: #e50914;
-    color: #fff;
-}
 
 </style>
