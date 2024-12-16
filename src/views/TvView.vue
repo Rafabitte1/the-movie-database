@@ -1,62 +1,22 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import api from '@/plugins/axios';
-import Loading from 'vue-loading-overlay';
-import { useGenreStore } from '@/stores/genre.js';
-import { useRouter } from 'vue-router';
-
-const series = ref([]);
-const carregando = ref(false);
-const categoriaSelecionada = ref(null);
-const armazemGeneros = useGenreStore();
-const router = useRouter();
-
-onMounted(async () => {
-    carregando.value = true;
-    await armazemGeneros.obterTodosGeneros('tv');
-    carregando.value = false;
-});
-
-const listarSeries = async (generoId) => {
-    if (!generoId) return;
-    armazemGeneros.definirGeneroAtualId(generoId);
-    carregando.value = true;
-    const resposta = await api.get('discover/tv', {
-        params: {
-            with_genres: generoId,
-            language: 'pt-BR',
-        },
-    });
-    series.value = resposta.data.results;
-    carregando.value = false;
-};
-
-const formatarData = (data) => new Date(data).toLocaleDateString('pt-BR');
-
-const abrirSerie = (serieId) => {
-    router.push({ name: 'DetalhesSerie', params: { serieId } });
-}
-</script>
-
 <template>
     <h1>Séries</h1>
-    <select v-model="categoriaSelecionada" @change="listarSeries(categoriaSelecionada)" class="seletor-categoria">
+    <select v-model="selectedGenre" @change="listTvs(selectedGenre)" class="genre-select">
         <option value="" disabled selected>Selecione uma categoria</option>
-        <option v-for="genero in armazemGeneros.generos" :key="genero.id" :value="genero.id">
-            {{ genero.nome }}
+        <option v-for="genre in genreStore.genres" :key="genre.id" :value="genre.id">
+            {{ genre.name }}
         </option>
     </select>
-    <loading v-model:active="carregando" is-full-page />
-    <div class="lista-series">
-        <div v-for="serie in series" :key="serie.id" class="cartao-serie">
-            <img :src="`https://image.tmdb.org/t/p/w500${serie.poster_path}`" :alt="serie.titulo_original" @click="abrirSerie(serie.id)" />
-            <div class="detalhes-serie">
-                <p class="titulo-serie">{{ serie.titulo_original }}</p>
-                <p class="data-lancamento">{{ formatarData(serie.data_lancamento) }}</p>
-                <p class="generos-serie">
-                    <span v-for="genero_id in serie.genero_ids" :key="genero_id" @click="listarSeries(genero_id)"
-                        :class="{ ativo: genero_id === armazemGeneros.generoAtualId }">
-                        {{ armazemGeneros.obterNomeGenero(genero_id) }}
+    <loading v-model:active="isLoading" is-full-page />
+    <div class="tv-list">
+        <div v-for="tv in tvs" :key="tv.id" class="tv-card">
+            <img :src="`https://image.tmdb.org/t/p/w500${tv.poster_path}`" :alt="tv.original_name" @click="openTv(tv.id)" />
+            <div class="tv-details">
+                <p class="tv-title">{{ tv.original_name }}</p>
+                <p class="tv-release-date">{{ formatDate(tv.first_air_date) }}</p>
+                <p class="tv-genres">
+                    <span v-for="genre_id in tv.genre_ids" :key="genre_id" @click="listTvs(genre_id)"
+                        :class="{ active: genre_id === genreStore.currentGenreId }">
+                        {{ genreStore.getGenreName(genre_id) }}
                     </span>
                 </p>
             </div>
@@ -64,45 +24,91 @@ const abrirSerie = (serieId) => {
     </div>
 </template>
 
+<script setup>
+import { ref, onMounted } from 'vue';
+import api from '@/plugins/axios';
+import Loading from 'vue-loading-overlay';
+import { useGenreStore } from '@/stores/genre.js';
+import { useRouter } from 'vue-router';
+
+const tvs = ref([]);
+const isLoading = ref(false);
+const selectedGenre = ref(null); 
+const genreStore = useGenreStore();
+const router = useRouter();
+
+onMounted(async () => {
+    isLoading.value = true;
+    await genreStore.getAllGenres('tv');
+    isLoading.value = false;
+});
+
+const listTvs = async (genreId) => {
+    if (!genreId) return; 
+    genreStore.setCurrentGenreId(genreId);
+    isLoading.value = true;
+    const response = await api.get('discover/tv', {
+        params: {
+            with_genres: genreId,
+            language: 'pt-BR',
+        },
+    });
+    tvs.value = response.data.results;
+    isLoading.value = false;
+};
+
+const formatDate = (date) => new Date(date).toLocaleDateString('pt-BR');
+
+const openTv = (tvId) => {
+    router.push({ name: 'TvDetails', params: { tvId } });
+}
+</script>
 
 <style scoped>
-  .seletor-categoria {
+.genre-select {
     margin-bottom: 2rem;
     padding: 0.5rem;
     border-radius: 0.5rem;
     border: 1px solid #ccc;
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; 
     font-size: 1rem;
 }
 
-.lista-series {
+.tv-list {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center; 
     gap: 1rem;
 }
 
-.cartao-serie {
-    width: 200px;
-    cursor: pointer;
+.tv-card {
+    width: 15rem;
+    height: 30rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 0 0.5rem #000;
 }
 
-.titulo-serie {
+.tv-card img {
+    width: 100%;
+    height: 20rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.5rem #000;
+}
+
+.tv-details {
+    padding: 0 0.5rem;
+}
+
+.tv-title {
+    font-size: 1.1rem;
     font-weight: bold;
+    line-height: 1.3rem;
+    height: 3.2rem;
 }
 
-.data-lancamento {
-    color: gray;
+.tv-release-date {
+    font-size: 0.9rem;
+    color: #666; 
 }
-
-.generos-serie {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.generos-serie .ativo {
-    font-weight: bold;
-    color: #f39c12; 
-}
-
-
 </style>
