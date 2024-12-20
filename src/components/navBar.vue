@@ -6,14 +6,6 @@
             <router-link to="/tv">Séries</router-link>
         </nav>
     </header>
-<template>
-    <header>
-        <nav>
-            <router-link to="/">Home</router-link>
-            <router-link to="/filmes">Filmes</router-link>
-            <router-link to="/tv">Séries</router-link>
-        </nav>
-    </header>
 </template>
 
 <style scoped>
@@ -22,9 +14,8 @@ header {
     top: 0; 
     left: 0; 
     width: 100%; 
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
-    font-size: larger;
+    z-index: 1000; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     background-color: #001830; 
     color: #ffffff; 
     padding: 1rem;
@@ -33,6 +24,7 @@ header {
     padding-inline: 25px;
     padding-right: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
+    border-top: 5px solid #f39c12; 
 }
 
 nav {
