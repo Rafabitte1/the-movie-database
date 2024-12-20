@@ -6,6 +6,14 @@
             <router-link to="/tv">Séries</router-link>
         </nav>
     </header>
+<template>
+    <header>
+        <nav>
+            <router-link to="/">Home</router-link>
+            <router-link to="/filmes">Filmes</router-link>
+            <router-link to="/tv">Séries</router-link>
+        </nav>
+    </header>
 </template>
 
 <style scoped>
@@ -25,7 +33,6 @@ header {
     padding-inline: 25px;
     padding-right: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
-    border-top: 5px solid #f39c12; 
 }
 
 nav {
