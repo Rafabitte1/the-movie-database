@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, onMounted } from 'vue';
-import { useTvStore } from '@/stores/tv';
+import { useTvStore } from '@/stores/tvs';
 const tvStore = useTvStore();
 
 const props = defineProps({

@@ -1,29 +1,3 @@
-<template>
-    <h1>Séries</h1>
-    <select v-model="selectedGenre" @change="listTvs(selectedGenre)" class="genre-select">
-        <option value="" disabled selected>Selecione uma categoria</option>
-        <option v-for="genre in genreStore.genres" :key="genre.id" :value="genre.id">
-            {{ genre.name }}
-        </option>
-    </select>
-    <loading v-model:active="isLoading" is-full-page />
-    <div class="tv-list">
-        <div v-for="tv in tvs" :key="tv.id" class="tv-card">
-            <img :src="`https://image.tmdb.org/t/p/w500${tv.poster_path}`" :alt="tv.original_name" @click="openTv(tv.id)" />
-            <div class="tv-details">
-                <p class="tv-title">{{ tv.original_name }}</p>
-                <p class="tv-release-date">{{ formatDate(tv.first_air_date) }}</p>
-                <p class="tv-genres">
-                    <span v-for="genre_id in tv.genre_ids" :key="genre_id" @click="listTvs(genre_id)"
-                        :class="{ active: genre_id === genreStore.currentGenreId }">
-                        {{ genreStore.getGenreName(genre_id) }}
-                    </span>
-                </p>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '@/plugins/axios';
@@ -63,6 +37,34 @@ const openTv = (tvId) => {
     router.push({ name: 'TvDetails', params: { tvId } });
 }
 </script>
+
+
+<template>
+    <h1>Séries</h1>
+    <select v-model="selectedGenre" @change="listTvs(selectedGenre)" class="genre-select">
+        <option value="" disabled selected>Selecione uma categoria</option>
+        <option v-for="genre in genreStore.genres" :key="genre.id" :value="genre.id">
+            {{ genre.name }}
+        </option>
+    </select>
+    <loading v-model:active="isLoading" is-full-page />
+    <div class="tv-list">
+        <div v-for="tv in tvs" :key="tv.id" class="tv-card">
+            <img :src="`https://image.tmdb.org/t/p/w500${tv.poster_path}`" :alt="tv.original_name" @click="openTv(tv.id)" />
+            <div class="tv-details">
+                <p class="tv-title">{{ tv.original_name }}</p>
+                <p class="tv-release-date">{{ formatDate(tv.first_air_date) }}</p>
+                <p class="tv-genres">
+                    <span v-for="genre_id in tv.genre_ids" :key="genre_id" @click="listTvs(genre_id)"
+                        :class="{ active: genre_id === genreStore.currentGenreId }">
+                        {{ genreStore.getGenreName(genre_id) }}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</template>
+
 
 <style scoped>
 .genre-select {
